@@ -59,21 +59,11 @@ class PaymentWebhooksController extends BaseController
                 $this->getPaymentsNotificationService()->sendSubscriptionEnded($submissionId);
                 break;
             case Event::INVOICE_PAYMENT_SUCCEEDED:
-                return '';
-                //TODO: fix to correct path
-                $submissionId = $event->data->object->lines->data[0]->subscription;
-                if (!$submissionId) {
-                    throw new HttpException(400, $errorMessage);
-                }
+                $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
                 $this->getPaymentsNotificationService()->sendSubscriptionPaymentSucceeded($submissionId);
                 break;
             case Event::INVOICE_PAYMENT_FAILED:
-                return '';
-                //TODO: fix to correct path
-                $submissionId = $event->data->object->lines->data[0]->subscription;
-                if (!$submissionId) {
-                    throw new HttpException(400, $errorMessage);
-                }
+                $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
                 $this->getPaymentsNotificationService()->sendSubscriptionPaymentFailed($submissionId);
                 break;
             default:

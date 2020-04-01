@@ -18,33 +18,40 @@ use Solspace\Freeform\Records\Pro\Payments\PaymentRecord;
 
 class PaymentNotificationsService extends Component
 {
-    public function sendChargeSucceeded(int $submissionId) {
+    public function sendChargeSucceeded(int $submissionId)
+    {
         $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_CHARGE_SUCCEEDED);
     }
 
-    public function sendChargeFailed(int $submissionId) {
+    public function sendChargeFailed(int $submissionId)
+    {
         $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_CHARGE_FAILED);
     }
 
-    public function sendSubscriptionCreated(int $submissionId) {
+    public function sendSubscriptionCreated(int $submissionId)
+    {
         $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_CREATED);
     }
 
-    public function sendSubscriptionEnded(int $submissionId) {
+    public function sendSubscriptionEnded(int $submissionId)
+    {
         //TODO: move status update somewhere nice
         Freeform::getInstance()->subscriptions->updateSubscriptionStatus($submissionId, PaymentRecord::STATUS_INACTIVE);
         $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_ENDED);
     }
 
-    public function sendSubscriptionPaymentSucceeded(int $submissionId) {
+    public function sendSubscriptionPaymentSucceeded(int $submissionId)
+    {
         $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_PAYMENT_SUCCEEDED);
     }
 
-    public function sendSubscriptionPaymentFailed(int $submissionId) {
+    public function sendSubscriptionPaymentFailed(int $submissionId)
+    {
         $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_PAYMENT_FAILED);
     }
 
-    protected  function send(int $submissionId, string $notificationType) {
+    protected function send(int $submissionId, string $notificationType, $stripeData = false)
+    {
         //TODO: add error handling and logging
         $submission = Freeform::getInstance()->submissions->getSubmissionById($submissionId);
         $form = $submission->getForm();
@@ -63,6 +70,8 @@ class PaymentNotificationsService extends Component
         }
 
         $fields = $form->getLayout()->getFields();
+
+
         Freeform::getInstance()->mailer->sendEmail(
             $form,
             $email,
