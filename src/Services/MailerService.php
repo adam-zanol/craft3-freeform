@@ -49,6 +49,7 @@ class MailerService extends BaseService implements MailHandlerInterface
      * @param mixed            $notificationId
      * @param FieldInterface[] $fields
      * @param Submission       $submission
+     * @param mixed      $data
      *
      * @return int - number of successfully sent emails
      * @throws FreeformException
@@ -58,7 +59,8 @@ class MailerService extends BaseService implements MailHandlerInterface
         $recipients,
         $notificationId,
         array $fields,
-        Submission $submission = null
+        Submission $submission = null,
+        $data = null
     ): int {
         $logger        = FreeformLogger::getInstance(FreeformLogger::MAILER);
         $sentMailCount = 0;
@@ -95,6 +97,7 @@ class MailerService extends BaseService implements MailHandlerInterface
 
         $this->trigger(self::EVENT_BEFORE_RENDER, $renderEvent);
         $fieldValues = $renderEvent->getFieldValues();
+        $fieldValues['data'] = $data;
 
         $templateMode = \Craft::$app->view->getTemplateMode();
         \Craft::$app->view->setTemplateMode(View::TEMPLATE_MODE_SITE);

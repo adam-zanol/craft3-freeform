@@ -28,29 +28,29 @@ class PaymentNotificationsService extends Component
         $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_CHARGE_FAILED);
     }
 
-    public function sendSubscriptionCreated(int $submissionId)
+    public function sendSubscriptionCreated(int $submissionId,$stripeData=null)
     {
-        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_CREATED);
+        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_CREATED, $stripeData);
     }
 
-    public function sendSubscriptionEnded(int $submissionId)
+    public function sendSubscriptionEnded(int $submissionId,$stripeData=null)
     {
         //TODO: move status update somewhere nice
         Freeform::getInstance()->subscriptions->updateSubscriptionStatus($submissionId, PaymentRecord::STATUS_INACTIVE);
-        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_ENDED);
+        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_ENDED, $stripeData);
     }
 
-    public function sendSubscriptionPaymentSucceeded(int $submissionId)
+    public function sendSubscriptionPaymentSucceeded(int $submissionId,$stripeData=null)
     {
-        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_PAYMENT_SUCCEEDED);
+        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_PAYMENT_SUCCEEDED, $stripeData);
     }
 
-    public function sendSubscriptionPaymentFailed(int $submissionId)
+    public function sendSubscriptionPaymentFailed(int $submissionId,$stripeData=null)
     {
-        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_PAYMENT_FAILED);
+        $this->send($submissionId, PaymentProperties::NOTIFICATION_TYPE_SUBSCRIPTION_PAYMENT_FAILED, $stripeData);
     }
 
-    protected function send(int $submissionId, string $notificationType, $stripeData = false)
+    protected function send(int $submissionId, string $notificationType, $stripeData = null)
     {
         //TODO: add error handling and logging
         $submission = Freeform::getInstance()->submissions->getSubmissionById($submissionId);
@@ -77,7 +77,10 @@ class PaymentNotificationsService extends Component
             $email,
             $notifications[$notificationType] ?? null,
             $fields,
-            $submission
+            $submission,
+            $data = [
+                'stripeData'=> $stripeData
+            ]
         );
     }
 }

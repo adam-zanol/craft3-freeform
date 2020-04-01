@@ -52,19 +52,19 @@ class PaymentWebhooksController extends BaseController
         switch ($event->type) {
             case Event::CUSTOMER_SUBSCRIPTION_CREATED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionCreated($submissionId);
+                $this->getPaymentsNotificationService()->sendSubscriptionCreated($submissionId,$event->data->object);
                 break;
             case Event::CUSTOMER_SUBSCRIPTION_DELETED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionEnded($submissionId);
+                $this->getPaymentsNotificationService()->sendSubscriptionEnded($submissionId, $event->data->object);
                 break;
             case Event::INVOICE_PAYMENT_SUCCEEDED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionPaymentSucceeded($submissionId);
+                $this->getPaymentsNotificationService()->sendSubscriptionPaymentSucceeded($submissionId,$event->data->object);
                 break;
             case Event::INVOICE_PAYMENT_FAILED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionPaymentFailed($submissionId);
+                $this->getPaymentsNotificationService()->sendSubscriptionPaymentFailed($submissionId,$event->data->object);
                 break;
             default:
         }
