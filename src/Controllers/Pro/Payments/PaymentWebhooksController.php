@@ -49,22 +49,24 @@ class PaymentWebhooksController extends BaseController
 
         //TODO: implement all notification service call as events?
         //TODO: update payment/subscription status accordingly
+
+        $stripeData = isset($event->data->object) ? $event->data->object : false;
         switch ($event->type) {
             case Event::CUSTOMER_SUBSCRIPTION_CREATED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionCreated($submissionId,$event->data->object);
+                $this->getPaymentsNotificationService()->sendSubscriptionCreated($submissionId,$stripeData);
                 break;
             case Event::CUSTOMER_SUBSCRIPTION_DELETED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionEnded($submissionId, $event->data->object);
+                $this->getPaymentsNotificationService()->sendSubscriptionEnded($submissionId,$stripeData);
                 break;
             case Event::INVOICE_PAYMENT_SUCCEEDED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionPaymentSucceeded($submissionId,$event->data->object);
+                $this->getPaymentsNotificationService()->sendSubscriptionPaymentSucceeded($submissionId,$stripeData);
                 break;
             case Event::INVOICE_PAYMENT_FAILED:
                 $submissionId = $this->getSubmissionIdFromStripeEvent($event, $integration);
-                $this->getPaymentsNotificationService()->sendSubscriptionPaymentFailed($submissionId,$event->data->object);
+                $this->getPaymentsNotificationService()->sendSubscriptionPaymentFailed($submissionId,$stripeData);
                 break;
             default:
         }
